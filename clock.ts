@@ -1,3 +1,23 @@
+class CircularList<T> {
+    private items: T[];
+    private index: number;
+
+    constructor(items: T[]) {
+        this.items = items;
+        this.index = 0;
+    }
+
+    next(): T {
+        const item = this.items[this.index];
+        this.index = (this.index + 1) % this.items.length;
+        return item;
+    }
+
+    current(): T {
+        return this.items[this.index];
+    }
+}
+
 const canvas = document.getElementById("clock") as HTMLCanvasElement | null;
 
 if (canvas) {
@@ -7,6 +27,9 @@ if (canvas) {
         canvas.height = 400;
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
+
+        const hoursList = new CircularList<number>(Array.from({ length: 12 }, (_, i) => i + 1));
+        const anglesList = new CircularList<number>([0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]);
 
         function circularPosition(radius: number, angle: number) {
             const radians = (angle - 90) * (Math.PI / 180);
@@ -38,10 +61,11 @@ if (canvas) {
 
             ctx.font = "24px Arial";
             ctx.fillStyle = "#1976d2";
-            for (let i = 1; i <= 12; i++) {
-                const angle = (i / 12) * 360;
+            for (let i = 0; i < 12; i++) {
+                const hour = hoursList.next();
+                const angle = anglesList.next();
                 const pos = circularPosition(160, angle);
-                ctx.fillText(i.toString(), pos.x - 10, pos.y + 10);
+                ctx.fillText(hour.toString(), pos.x - 10, pos.y + 10);
             }
 
             function drawHand(length: number, angle: number, width: number, color: string) {
