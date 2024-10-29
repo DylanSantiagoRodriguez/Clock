@@ -1,3 +1,18 @@
+var CircularList = /** @class */ (function () {
+    function CircularList(items) {
+        this.items = items;
+        this.index = 0;
+    }
+    CircularList.prototype.next = function () {
+        var item = this.items[this.index];
+        this.index = (this.index + 1) % this.items.length;
+        return item;
+    };
+    CircularList.prototype.current = function () {
+        return this.items[this.index];
+    };
+    return CircularList;
+}());
 var canvas = document.getElementById("clock");
 if (canvas) {
     var ctx_1 = canvas.getContext("2d");
@@ -6,6 +21,8 @@ if (canvas) {
         canvas.height = 400;
         var centerX_1 = canvas.width / 2;
         var centerY_1 = canvas.height / 2;
+        var hoursList_1 = new CircularList(Array.from({ length: 12 }, function (_, i) { return i + 1; }));
+        var anglesList_1 = new CircularList([0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]);
         function circularPosition(radius, angle) {
             var radians = (angle - 90) * (Math.PI / 180);
             return {
@@ -31,10 +48,11 @@ if (canvas) {
             ctx_1.stroke();
             ctx_1.font = "24px Arial";
             ctx_1.fillStyle = "#1976d2";
-            for (var i = 1; i <= 12; i++) {
-                var angle = (i / 12) * 360;
+            for (var i = 0; i < 12; i++) {
+                var hour = hoursList_1.next();
+                var angle = anglesList_1.next();
                 var pos = circularPosition(160, angle);
-                ctx_1.fillText(i.toString(), pos.x - 10, pos.y + 10);
+                ctx_1.fillText(hour.toString(), pos.x - 10, pos.y + 10);
             }
             function drawHand(length, angle, width, color) {
                 var pos = circularPosition(length, angle);
